@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+src/autodev_crew/__init__.py
+src/autodev_crew/agents.py
+src/autodev_crew/crew.py
+src/autodev_crew/main.py
+src/autodev_crew/tasks.py
+src/autodev_crew.egg-info/PKG-INFO
+src/autodev_crew.egg-info/SOURCES.txt
+src/autodev_crew.egg-info/dependency_links.txt
+src/autodev_crew.egg-info/entry_points.txt
+src/autodev_crew.egg-info/requires.txt
+src/autodev_crew.egg-info/top_level.txt
+src/autodev_crew/tools/__init__.py
+src/autodev_crew/tools/file_tools.py

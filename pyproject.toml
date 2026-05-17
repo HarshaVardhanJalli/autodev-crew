@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autodev-crew"
+version = "1.0.0"
+description = "Autonomous Software Development Team powered by CrewAI multi-agent architecture"
+requires-python = ">=3.12"
+dependencies = [
+    "crewai>=1.14.0",
+    "crewai-tools>=1.14.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.scripts]
+autodev = "autodev_crew.main:run"
+
+[tool.setuptools.packages.find]
+where = ["src"]
