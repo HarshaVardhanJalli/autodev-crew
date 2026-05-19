@@ -3,9 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    box-sizing: border-box;
-  }
+  *, *::before, *::after { box-sizing: border-box; }
 
   html, body, #root {
     height: 100%;
@@ -14,71 +12,61 @@
   }
 
   body {
-    background-color: #070712;
-    color: #f1f5f9;
+    background-color: #0e0c0a;
+    color: #e2d8cc;
     font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    background-image: radial-gradient(circle, rgba(45,40,32,0.65) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-attachment: fixed;
   }
 
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #2a2a4a;
-    border-radius: 3px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #3a3a5a;
-  }
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #2d2820; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3d352e; }
 }
 
 @layer components {
-  .glass-card {
-    @apply bg-card border border-border rounded-xl;
-    backdrop-filter: blur(8px);
+  /* ── Agent card states ──────────────────────────────────────── */
+  .agent-idle {
+    background-color: #1c1915;
+    border: 1px solid #2d2820;
+    color: #7a6e63;
+  }
+  .agent-active {
+    background-color: #1f1912;
+    border: 1px solid rgba(240,135,45,0.5);
+    color: #e2d8cc;
+    animation: pulse-amber 2s ease-in-out infinite;
+  }
+  .agent-complete {
+    background-color: #141f13;
+    border: 1px solid rgba(95,184,95,0.4);
+    color: #5fb85f;
+  }
+  .agent-error {
+    background-color: #1f1313;
+    border: 1px solid rgba(224,82,82,0.4);
+    color: #e05252;
   }
 
-  .status-idle {
-    @apply border-[#1c1c3a] bg-[#0d0d22] text-slate-500;
-  }
-
-  .status-active {
-    @apply border-indigo-500 bg-[#101030] text-white;
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
-  .status-complete {
-    @apply border-emerald-700/60 bg-[#0a1a14] text-emerald-300;
-  }
-
-  .status-error {
-    @apply border-rose-700/60 bg-[#1a0a10] text-rose-400;
-  }
-
-  .connector-idle {
-    @apply bg-[#1c1c3a];
-  }
-
-  .connector-active {
-    background: linear-gradient(90deg, #059669, #6366f1, #059669);
+  /* ── Connector states ───────────────────────────────────────── */
+  .conn-idle { background-color: #2d2820; }
+  .conn-done {
+    background: linear-gradient(90deg, #5fb85f, #f0872d, #5fb85f);
     background-size: 200% 100%;
-    animation: flow 1.5s linear infinite;
+    animation: flow-amber 1.8s linear infinite;
   }
 
-  .log-system  { @apply text-slate-500; }
-  .log-agent   { @apply text-violet-400 font-medium; }
-  .log-success { @apply text-emerald-400; }
-  .log-error   { @apply text-rose-400; }
-  .log-warn    { @apply text-amber-400; }
-  .log-console { @apply text-slate-400; }
-  .log-divider { @apply border-t border-[#1c1c3a] my-1; }
+  /* ── Console log colours ────────────────────────────────────── */
+  .log-system  { color: #4a4038; font-family: 'JetBrains Mono', monospace; }
+  .log-agent   { color: #f0872d; font-weight: 500; font-family: 'JetBrains Mono', monospace; }
+  .log-success { color: #5fb85f; font-family: 'JetBrains Mono', monospace; }
+  .log-error   { color: #e05252; font-family: 'JetBrains Mono', monospace; }
+  .log-warn    { color: #c9963a; font-family: 'JetBrains Mono', monospace; }
+  .log-console { color: #5a4e45; font-family: 'JetBrains Mono', monospace; }
+  .log-divider { border-top: 1px solid #2d2820; margin: 8px 0; }
 }
 
 @layer utilities {

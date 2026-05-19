@@ -1,12 +1,10 @@
 import { useState } from 'react'
 
-const DEMOS = [
+const EXAMPLES = [
   {
     id: 1,
-    icon: '🔐',
-    name: 'JWT Auth API',
-    tag: 'FastAPI · SQLite',
-    desc: 'Register/login flow with JWT tokens, refresh tokens, and rate limiting.',
+    label: 'JWT Auth API',
+    stack: 'FastAPI · SQLite',
     request:
       'Build a REST API for user authentication with JWT tokens using FastAPI and SQLite. ' +
       'Users should be able to register with email and password, log in to get a JWT access ' +
@@ -16,10 +14,8 @@ const DEMOS = [
   },
   {
     id: 2,
-    icon: '📋',
-    name: 'Task Management API',
-    tag: 'FastAPI · JWT',
-    desc: 'Trello-like project/task system with priorities, assignments, and filters.',
+    label: 'Task Management API',
+    stack: 'FastAPI · JWT',
     request:
       'Build a REST API for a task management system (like a simplified Trello) using FastAPI. ' +
       'Users can create projects, add tasks to projects, assign tasks to team members, ' +
@@ -29,10 +25,8 @@ const DEMOS = [
   },
   {
     id: 3,
-    icon: '🔗',
-    name: 'URL Shortener',
-    tag: 'FastAPI · Redis',
-    desc: 'bit.ly clone with click analytics, expiry dates, and custom slugs.',
+    label: 'URL Shortener',
+    stack: 'FastAPI · Redis',
     request:
       'Build a URL shortener service like bit.ly using FastAPI and Redis. ' +
       'Users can shorten long URLs, get analytics (click count, referrer, geo), ' +
@@ -43,138 +37,124 @@ const DEMOS = [
 ]
 
 export default function FeatureSelector({ phase, onStart, onDemo, onReset, error }) {
-  const [selected, setSelected] = useState(null) // demo id | 'custom'
-  const [custom, setCustom] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [request, setRequest]           = useState('')
+  const [showExamples, setShowExamples] = useState(false)
+  const [loading, setLoading]           = useState(false)
 
-  const canRun = phase === 'select' || phase === 'error' || phase === 'complete'
-  const isRunning = phase === 'running'
+  const canRun   = phase === 'select' || phase === 'error' || phase === 'complete'
+  const isActive = phase === 'running'
+
+  const pickExample = (ex) => {
+    setRequest(ex.request)
+    setShowExamples(false)
+  }
 
   const handleRun = async () => {
-    const req =
-      selected === 'custom'
-        ? custom.trim()
-        : DEMOS.find(d => d.id === selected)?.request
-
-    if (!req) return
+    if (!request.trim()) return
     setLoading(true)
-    await onStart(req)
+    await onStart(request.trim())
     setLoading(false)
   }
 
   const handleReset = () => {
-    setSelected(null)
-    setCustom('')
+    setRequest('')
+    setShowExamples(false)
     setLoading(false)
     onReset()
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Header */}
-      <div>
-        <div className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">Feature Request</div>
-        <div className="text-[11px] text-slate-600">
-          Choose a demo or describe your own feature
-        </div>
-      </div>
-
-      {/* Demo options */}
-      <div className="flex flex-col gap-2">
-        {DEMOS.map(demo => (
+    <div className="flex flex-col gap-3">
+      {/* Label */}
+      <div className="flex items-center justify-between">
+        <span className="font-mono text-[10px] font-bold tracking-[0.18em] text-muted uppercase">
+          Feature Request
+        </span>
+        {canRun && (
           <button
-            key={demo.id}
-            disabled={isRunning}
-            onClick={() => setSelected(demo.id)}
-            className={`text-left rounded-lg border px-3 py-2.5 transition-all duration-200 group ${
-              selected === demo.id
-                ? 'border-indigo-500/60 bg-indigo-950/40'
-                : 'border-border bg-card hover:border-slate-600 hover:bg-[#121230]'
-            } ${isRunning ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
+            onClick={() => setShowExamples(v => !v)}
+            className="font-mono text-[10px] text-amber/70 hover:text-amber transition-colors"
           >
-            <div className="flex items-center gap-2">
-              <span className="text-base leading-none">{demo.icon}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold text-slate-200">{demo.name}</span>
-                  <span className="text-[9px] text-slate-600 font-mono flex-shrink-0">{demo.tag}</span>
-                </div>
-                <div className="text-[10px] text-slate-500 mt-0.5 leading-relaxed">{demo.desc}</div>
-              </div>
-            </div>
+            {showExamples ? '− hide examples' : '+ examples'}
           </button>
-        ))}
-
-        {/* Custom option */}
-        <button
-          disabled={isRunning}
-          onClick={() => setSelected('custom')}
-          className={`text-left rounded-lg border px-3 py-2.5 transition-all duration-200 ${
-            selected === 'custom'
-              ? 'border-violet-500/60 bg-violet-950/30'
-              : 'border-border bg-card hover:border-slate-600'
-          } ${isRunning ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-base">✏️</span>
-            <span className="text-xs font-semibold text-slate-300">Custom Request</span>
-          </div>
-        </button>
-
-        {selected === 'custom' && (
-          <textarea
-            className="w-full bg-[#0a0a1e] border border-violet-500/30 rounded-lg px-3 py-2 text-xs text-slate-300 placeholder-slate-700 focus:outline-none focus:border-violet-500/60 resize-none font-mono leading-relaxed animate-fade-in"
-            rows={5}
-            placeholder="Describe the feature you want to build…"
-            value={custom}
-            onChange={e => setCustom(e.target.value)}
-            disabled={isRunning}
-          />
         )}
       </div>
 
-      {/* Error banner */}
-      {error && (
-        <div className="bg-rose-950/40 border border-rose-700/40 rounded-lg px-3 py-2 text-xs text-rose-400 animate-fade-in">
-          <span className="font-medium">Error: </span>{error}
+      {/* Examples drawer */}
+      {showExamples && canRun && (
+        <div className="flex flex-col gap-1.5 animate-fade-in">
+          {EXAMPLES.map(ex => (
+            <button
+              key={ex.id}
+              onClick={() => pickExample(ex)}
+              className="text-left bg-raised border border-edge hover:border-amber/40 rounded px-3 py-2 transition-all duration-150 group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-medium text-ink group-hover:text-amber transition-colors">
+                  {ex.label}
+                </span>
+                <span className="font-mono text-[9px] text-muted">{ex.stack}</span>
+              </div>
+            </button>
+          ))}
+          <div className="border-t border-edge mt-1" />
         </div>
       )}
 
-      {/* CTA buttons */}
+      {/* Main textarea */}
+      <textarea
+        rows={6}
+        disabled={isActive}
+        value={request}
+        onChange={e => setRequest(e.target.value)}
+        placeholder={"Describe what you want to build...\n\ne.g. A REST API for a blog where users can create posts, comment, and follow authors."}
+        className={`w-full bg-raised border border-edge rounded px-3 py-2.5 font-mono text-[11px] text-ink placeholder-faint leading-relaxed resize-none focus:outline-none focus:border-amber/50 transition-colors ${
+          isActive ? 'opacity-40 cursor-not-allowed' : ''
+        }`}
+      />
+
+      {/* Error */}
+      {error && (
+        <div className="bg-[#1f1313] border border-ember/30 rounded px-3 py-2 font-mono text-[10px] text-ember animate-fade-in">
+          ✕ {error}
+        </div>
+      )}
+
+      {/* Actions */}
       {canRun ? (
         <div className="flex flex-col gap-2">
           <button
-            disabled={!selected || (selected === 'custom' && !custom.trim()) || loading}
+            disabled={!request.trim() || loading}
             onClick={handleRun}
-            className={`w-full py-2.5 rounded-lg text-sm font-semibold tracking-tight transition-all duration-200 ${
-              selected && !(selected === 'custom' && !custom.trim())
-                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-900/40 hover:shadow-indigo-900/60'
-                : 'bg-[#12122a] text-slate-700 cursor-not-allowed border border-border'
+            className={`w-full py-2.5 rounded font-mono text-[11px] font-bold tracking-widest uppercase transition-all duration-200 ${
+              request.trim()
+                ? 'bg-amber text-[#0e0c0a] hover:bg-amber/90 shadow-[0_0_20px_rgba(240,135,45,0.25)] hover:shadow-[0_0_28px_rgba(240,135,45,0.4)]'
+                : 'bg-raised text-faint border border-edge cursor-not-allowed'
             }`}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
-                <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Starting pipeline…
+                <span className="w-3 h-3 border-2 border-[#0e0c0a]/30 border-t-[#0e0c0a] rounded-full animate-spin" />
+                initializing…
               </span>
             ) : (
-              '🚀 Run Pipeline'
+              '→ run pipeline'
             )}
           </button>
 
           <button
             onClick={onDemo}
-            className="w-full py-2 rounded-lg text-xs font-medium text-violet-400 border border-violet-700/40 hover:border-violet-500/60 hover:bg-violet-950/30 transition-all duration-200"
+            className="w-full py-1.5 rounded font-mono text-[10px] text-muted hover:text-amber/80 border border-edge hover:border-amber/30 transition-all duration-150"
           >
-            ▶ Watch Demo  <span className="text-violet-600">— no API key needed</span>
+            ▷ watch demo run
           </button>
         </div>
       ) : (
         <button
-          onClick={onReset}
-          className="w-full py-2.5 rounded-lg text-sm font-medium text-slate-300 border border-border hover:border-slate-500 hover:bg-[#12122a] transition-all duration-200"
+          onClick={handleReset}
+          className="w-full py-2 rounded font-mono text-[11px] text-muted border border-edge hover:border-amber/30 hover:text-amber/80 transition-all duration-150"
         >
-          ↺ New Run
+          ← new run
         </button>
       )}
     </div>

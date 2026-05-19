@@ -1,34 +1,29 @@
 import { useEffect, useState } from 'react'
 
-const STATUS_CLASSES = {
-  idle:     'status-idle',
-  active:   'status-active',
-  complete: 'status-complete',
-  error:    'status-error',
+const STEP_LABELS = ['01', '02', '03', '04', '05']
+
+const STATE_CLASS = {
+  idle:     'agent-idle',
+  active:   'agent-active',
+  complete: 'agent-complete',
+  error:    'agent-error',
 }
 
-const STATUS_DOT = {
-  idle:     'bg-slate-700',
-  active:   'bg-indigo-400 animate-pulse',
-  complete: 'bg-emerald-400',
-  error:    'bg-rose-500',
-}
-
-const STATUS_LABEL = {
-  idle:     'Waiting',
-  active:   'Working…',
-  complete: 'Done',
-  error:    'Failed',
+const STATE_TAG = {
+  idle:     { label: 'WAITING', cls: 'text-faint' },
+  active:   { label: 'WORKING', cls: 'text-amber' },
+  complete: { label: 'DONE',    cls: 'text-grove' },
+  error:    { label: 'FAILED',  cls: 'text-ember' },
 }
 
 function fmt(ms) {
-  if (!ms) return ''
+  if (!ms || ms < 0) return null
   const s = Math.floor(ms / 1000)
   return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${s % 60}s`
 }
 
-export default function AgentCard({ agent }) {
-  const { icon, role, desc, status, startTime, duration, preview } = agent
+export default function AgentCard({ agent, index }) {
+  const { role, desc, status, startTime, duration, preview } = agent
   const [elapsed, setElapsed] = useState(0)
 
   useEffect(() => {
@@ -37,52 +32,50 @@ export default function AgentCard({ agent }) {
     return () => clearInterval(id)
   }, [status, startTime])
 
-  const timeLabel =
-    status === 'complete' && duration ? fmt(duration) :
-    status === 'active' ? fmt(elapsed) : ''
+  const timeStr = status === 'complete' ? fmt(duration)
+                : status === 'active'   ? fmt(elapsed)
+                : null
+
+  const tag = STATE_TAG[status]
 
   return (
-    <div className={`flex flex-col gap-2 rounded-xl border px-3 py-3 transition-all duration-500 ${STATUS_CLASSES[status]}`}>
-      {/* Top row: icon + status dot */}
+    <div className={`flex flex-col gap-3 p-3 rounded transition-all duration-500 ${STATE_CLASS[status]}`}>
+      {/* Step number + timer */}
       <div className="flex items-center justify-between">
-        <span className="text-xl leading-none">{icon}</span>
-        <div className="flex items-center gap-1.5">
-          {timeLabel && (
-            <span className="text-[10px] font-mono opacity-70">{timeLabel}</span>
-          )}
-          <span className={`w-2 h-2 rounded-full ${STATUS_DOT[status]}`} />
-        </div>
+        <span className={`font-mono text-xs font-bold tracking-widest ${
+          status === 'active'   ? 'text-amber' :
+          status === 'complete' ? 'text-grove/60' :
+          'text-faint'
+        }`}>
+          {STEP_LABELS[index]}
+        </span>
+        {timeStr && (
+          <span className="font-mono text-[10px] text-muted">{timeStr}</span>
+        )}
+        {status === 'active' && !timeStr && (
+          <span className="w-1.5 h-1.5 rounded-full bg-amber animate-pulse" />
+        )}
       </div>
 
-      {/* Role */}
+      {/* Role name */}
       <div>
-        <div className="text-xs font-semibold leading-tight tracking-tight">{role}</div>
-        <div className="text-[10px] opacity-50 mt-0.5 leading-tight">{desc}</div>
+        <div className="text-[11px] font-semibold leading-snug tracking-tight">{role}</div>
+        <div className="text-[10px] text-muted mt-0.5 leading-relaxed">{desc}</div>
       </div>
 
-      {/* Status badge */}
-      <div className={`text-[10px] font-medium tracking-wide uppercase ${
-        status === 'active'   ? 'text-indigo-400' :
-        status === 'complete' ? 'text-emerald-400' :
-        status === 'error'    ? 'text-rose-400' :
-        'text-slate-600'
-      }`}>
-        {STATUS_LABEL[status]}
+      {/* Status line */}
+      <div className={`text-[9px] font-mono font-bold tracking-[0.15em] ${tag.cls}`}>
+        {tag.label}
       </div>
 
-      {/* Output preview chip — shown on complete */}
+      {/* Output preview on complete */}
       {status === 'complete' && preview && (
         <div
-          className="text-[10px] text-emerald-500/70 font-mono line-clamp-2 border border-emerald-900/40 bg-emerald-950/20 rounded px-2 py-1 leading-relaxed cursor-default"
           title={preview}
+          className="text-[10px] font-mono text-grove/60 leading-relaxed border-l-2 border-grove/30 pl-2 line-clamp-2 cursor-default"
         >
-          {preview.slice(0, 120)}…
+          {preview.slice(0, 110)}
         </div>
-      )}
-
-      {/* Error hint */}
-      {status === 'error' && (
-        <div className="text-[10px] text-rose-400/70">Check console for details</div>
       )}
     </div>
   )
