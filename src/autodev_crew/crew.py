@@ -15,7 +15,7 @@ from .tasks import (
 )
 
 
-def build_autodev_crew(feature_request: str) -> Crew:
+def build_autodev_crew(feature_request: str, task_callback=None) -> Crew:
     pm = product_manager_agent()
     architect = system_architect_agent()
     developer = developer_agent()
@@ -36,4 +36,5 @@ def build_autodev_crew(feature_request: str) -> Crew:
         process=Process.sequential,
         verbose=True,
         memory=False,
+        task_callback=task_callback,
     )

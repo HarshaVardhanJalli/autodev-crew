@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #070712;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a4a;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a5a;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card border border-border rounded-xl;
+    backdrop-filter: blur(8px);
+  }
+
+  .status-idle {
+    @apply border-[#1c1c3a] bg-[#0d0d22] text-slate-500;
+  }
+
+  .status-active {
+    @apply border-indigo-500 bg-[#101030] text-white;
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .status-complete {
+    @apply border-emerald-700/60 bg-[#0a1a14] text-emerald-300;
+  }
+
+  .status-error {
+    @apply border-rose-700/60 bg-[#1a0a10] text-rose-400;
+  }
+
+  .connector-idle {
+    @apply bg-[#1c1c3a];
+  }
+
+  .connector-active {
+    background: linear-gradient(90deg, #059669, #6366f1, #059669);
+    background-size: 200% 100%;
+    animation: flow 1.5s linear infinite;
+  }
+
+  .log-system  { @apply text-slate-500; }
+  .log-agent   { @apply text-violet-400 font-medium; }
+  .log-success { @apply text-emerald-400; }
+  .log-error   { @apply text-rose-400; }
+  .log-warn    { @apply text-amber-400; }
+  .log-console { @apply text-slate-400; }
+  .log-divider { @apply border-t border-[#1c1c3a] my-1; }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
