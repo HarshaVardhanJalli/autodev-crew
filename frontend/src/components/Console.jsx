@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 
 function LogLine({ log }) {
   if (log.type === 'divider') return <div className="log-divider" />
+  const ts = new Date(log.id).toLocaleTimeString('en', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
   return (
-    <div className={`flex gap-2 text-[11px] leading-relaxed animate-slide-up log-${log.type}`}>
-      <span className="opacity-25 flex-shrink-0 select-none w-14 text-right font-mono">
-        {new Date(log.id).toLocaleTimeString('en', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-      </span>
+    <div className={`flex gap-3 leading-relaxed animate-slide-up log-${log.type}`}>
+      <span className="flex-shrink-0 select-none w-16 text-right opacity-40" style={{ fontSize: 11 }}>{ts}</span>
       <span className="break-all whitespace-pre-wrap">{log.text}</span>
     </div>
   )
@@ -36,65 +35,73 @@ export default function Console({ logs, phase }) {
 
   const errCount = logs.filter(l => l.type === 'error').length
 
+  const filterBtn = (f) => (
+    <button
+      key={f}
+      onClick={() => setFilter(f)}
+      className="font-mono uppercase tracking-wider transition-colors px-2.5 py-0.5 rounded border"
+      style={{
+        fontSize: 10,
+        borderColor: filter === f ? 'rgba(245,146,42,0.5)' : '#3a3028',
+        color:       filter === f ? '#f5922a' : '#8a7868',
+        background:  filter === f ? 'rgba(245,146,42,0.08)' : 'transparent',
+      }}
+    >
+      {f}
+    </button>
+  )
+
   return (
-    <div className="flex flex-col h-full bg-[#090705]">
+    <div className="flex flex-col h-full" style={{ background: '#0a0805' }}>
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-edge bg-surface flex-shrink-0">
+      <div className="flex items-center justify-between px-5 py-2.5 border-b flex-shrink-0"
+           style={{ borderColor: '#3a3028', background: '#141210' }}>
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] font-bold tracking-[0.15em] text-muted uppercase">Output</span>
-          <span className="font-mono text-[10px] text-faint">
+          <span className="font-mono font-bold tracking-[0.18em] uppercase" style={{ fontSize: 11, color: '#a89070' }}>
+            Output
+          </span>
+          <span className="font-mono" style={{ fontSize: 11, color: '#6a5848' }}>
             {logs.filter(l => l.type !== 'divider').length} lines
           </span>
           {errCount > 0 && (
-            <span className="font-mono text-[9px] bg-[#1f1313] text-ember border border-ember/30 px-1.5 py-0.5 rounded">
+            <span className="font-mono px-1.5 py-0.5 rounded border"
+                  style={{ fontSize: 10, color: '#f06060', borderColor: 'rgba(240,96,96,0.35)', background: 'rgba(240,96,96,0.08)' }}>
               {errCount} error{errCount > 1 ? 's' : ''}
             </span>
           )}
           {phase === 'running' && (
-            <span className="flex items-center gap-1.5 font-mono text-[10px] text-amber">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber animate-pulse" />
+            <span className="flex items-center gap-1.5 font-mono" style={{ fontSize: 11, color: '#f5922a' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#f5922a] animate-pulse" />
               live
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-1.5">
-          {['all', 'agent', 'console'].map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`font-mono text-[9px] px-2 py-0.5 rounded border transition-colors uppercase tracking-wider ${
-                filter === f
-                  ? 'border-amber/40 text-amber bg-[#1f1912]'
-                  : 'border-edge text-faint hover:text-muted'
-              }`}
-            >
-              {f}
-            </button>
-          ))}
+          {['all', 'agent', 'console'].map(filterBtn)}
           <button
             onClick={() => setAutoScroll(v => !v)}
-            className={`font-mono text-[9px] px-2 py-0.5 rounded border transition-colors ${
-              autoScroll ? 'border-amber/40 text-amber' : 'border-edge text-faint hover:text-muted'
-            }`}
+            className="font-mono px-2.5 py-0.5 rounded border transition-colors"
+            style={{
+              fontSize: 10,
+              borderColor: autoScroll ? 'rgba(245,146,42,0.5)' : '#3a3028',
+              color:       autoScroll ? '#f5922a' : '#8a7868',
+            }}
           >
-            ↓
+            ↓ auto
           </button>
         </div>
       </div>
 
       {/* Log stream */}
-      <div
-        ref={containerRef}
-        onScroll={onScroll}
-        className="flex-1 overflow-y-auto px-4 py-3 space-y-0.5"
-      >
+      <div ref={containerRef} onScroll={onScroll} className="flex-1 overflow-y-auto px-5 py-4 space-y-1">
         {visible.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-faint select-none gap-3">
-            <pre className="font-mono text-xs leading-relaxed opacity-40 text-center">{`>_`}</pre>
-            <div className="font-mono text-[11px] text-center">
+          <div className="flex flex-col items-center justify-center h-full gap-3 select-none"
+               style={{ color: '#52453a' }}>
+            <span className="font-mono text-2xl">{'_'}</span>
+            <div className="font-mono text-center" style={{ fontSize: 13 }}>
               <div>waiting for pipeline</div>
-              <div className="text-[10px] mt-1 opacity-60">describe a feature and run →</div>
+              <div className="mt-1" style={{ fontSize: 11, opacity: 0.6 }}>describe a feature and run →</div>
             </div>
           </div>
         ) : (
@@ -102,9 +109,9 @@ export default function Console({ logs, phase }) {
         )}
 
         {phase === 'running' && (
-          <div className="font-mono text-[11px] text-amber/60 flex gap-2">
-            <span className="opacity-25 w-14 text-right" />
-            <span className="animate-blink">█</span>
+          <div className="font-mono flex gap-3" style={{ fontSize: 12 }}>
+            <span className="w-16" />
+            <span className="animate-blink" style={{ color: '#f5922a', opacity: 0.7 }}>█</span>
           </div>
         )}
         <div ref={bottomRef} />

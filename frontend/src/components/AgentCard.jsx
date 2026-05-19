@@ -10,10 +10,17 @@ const STATE_CLASS = {
 }
 
 const STATE_TAG = {
-  idle:     { label: 'WAITING', cls: 'text-faint' },
-  active:   { label: 'WORKING', cls: 'text-amber' },
-  complete: { label: 'DONE',    cls: 'text-grove' },
-  error:    { label: 'FAILED',  cls: 'text-ember' },
+  idle:     { label: 'WAITING', color: '#6a5848' },
+  active:   { label: 'WORKING', color: '#f5922a' },
+  complete: { label: 'DONE',    color: '#64d264' },
+  error:    { label: 'FAILED',  color: '#f06060' },
+}
+
+const STEP_COLOR = {
+  idle:     '#6a5848',
+  active:   '#f5922a',
+  complete: '#64d264',
+  error:    '#f06060',
 }
 
 function fmt(ms) {
@@ -39,42 +46,39 @@ export default function AgentCard({ agent, index }) {
   const tag = STATE_TAG[status]
 
   return (
-    <div className={`flex flex-col gap-3 p-3 rounded transition-all duration-500 ${STATE_CLASS[status]}`}>
-      {/* Step number + timer */}
+    <div className={`flex flex-col gap-2.5 p-3.5 rounded-lg transition-all duration-500 ${STATE_CLASS[status]}`}>
+      {/* Step + timer */}
       <div className="flex items-center justify-between">
-        <span className={`font-mono text-xs font-bold tracking-widest ${
-          status === 'active'   ? 'text-amber' :
-          status === 'complete' ? 'text-grove/60' :
-          'text-faint'
-        }`}>
+        <span className="font-mono text-xs font-bold tracking-widest" style={{ color: STEP_COLOR[status] }}>
           {STEP_LABELS[index]}
         </span>
         {timeStr && (
-          <span className="font-mono text-[10px] text-muted">{timeStr}</span>
+          <span className="font-mono text-xs font-medium" style={{ color: '#a89070' }}>{timeStr}</span>
         )}
         {status === 'active' && !timeStr && (
-          <span className="w-1.5 h-1.5 rounded-full bg-amber animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-[#f5922a] animate-pulse" />
         )}
       </div>
 
-      {/* Role name */}
+      {/* Role */}
       <div>
-        <div className="text-[11px] font-semibold leading-snug tracking-tight">{role}</div>
-        <div className="text-[10px] text-muted mt-0.5 leading-relaxed">{desc}</div>
+        <div className="text-sm font-semibold leading-snug tracking-tight">{role}</div>
+        <div className="text-xs mt-1 leading-relaxed" style={{ color: '#a89880' }}>{desc}</div>
       </div>
 
-      {/* Status line */}
-      <div className={`text-[9px] font-mono font-bold tracking-[0.15em] ${tag.cls}`}>
+      {/* Status tag */}
+      <div className="font-mono text-[10px] font-bold tracking-[0.18em]" style={{ color: tag.color }}>
         {tag.label}
       </div>
 
-      {/* Output preview on complete */}
+      {/* Output preview */}
       {status === 'complete' && preview && (
         <div
           title={preview}
-          className="text-[10px] font-mono text-grove/60 leading-relaxed border-l-2 border-grove/30 pl-2 line-clamp-2 cursor-default"
+          className="text-xs font-mono leading-relaxed border-l-2 pl-2.5 line-clamp-2 cursor-default"
+          style={{ color: '#64d264', borderColor: 'rgba(100,210,100,0.35)', opacity: 0.85 }}
         >
-          {preview.slice(0, 110)}
+          {preview.slice(0, 100)}
         </div>
       )}
     </div>
