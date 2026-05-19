@@ -51,7 +51,7 @@ function FileViewer({ filename, content, onClose }) {
   )
 }
 
-export default function OutputPanel({ files, apiBase }) {
+export default function OutputPanel({ files, apiBase, isDemo }) {
   const [viewFile, setViewFile] = useState(null)
   const [fileContent, setFileContent] = useState('')
   const [loading, setLoading] = useState(false)
@@ -59,6 +59,11 @@ export default function OutputPanel({ files, apiBase }) {
   const open = async (name) => {
     if (viewFile === name) {
       setViewFile(null)
+      return
+    }
+    if (isDemo) {
+      setFileContent(`# ${name}\n\n(Demo mode — run the real pipeline to generate actual file content.)`)
+      setViewFile(name)
       return
     }
     setLoading(true)

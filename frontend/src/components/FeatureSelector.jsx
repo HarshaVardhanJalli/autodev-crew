@@ -42,7 +42,7 @@ const DEMOS = [
   },
 ]
 
-export default function FeatureSelector({ phase, onStart, onReset, error }) {
+export default function FeatureSelector({ phase, onStart, onDemo, onReset, error }) {
   const [selected, setSelected] = useState(null) // demo id | 'custom'
   const [custom, setCustom] = useState('')
   const [loading, setLoading] = useState(false)
@@ -142,27 +142,36 @@ export default function FeatureSelector({ phase, onStart, onReset, error }) {
 
       {/* CTA buttons */}
       {canRun ? (
-        <button
-          disabled={!selected || (selected === 'custom' && !custom.trim()) || loading}
-          onClick={handleRun}
-          className={`w-full py-2.5 rounded-lg text-sm font-semibold tracking-tight transition-all duration-200 ${
-            selected && !(selected === 'custom' && !custom.trim())
-              ? 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-900/40 hover:shadow-indigo-900/60'
-              : 'bg-[#12122a] text-slate-700 cursor-not-allowed border border-border'
-          }`}
-        >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Starting pipeline…
-            </span>
-          ) : (
-            '🚀 Run Pipeline'
-          )}
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            disabled={!selected || (selected === 'custom' && !custom.trim()) || loading}
+            onClick={handleRun}
+            className={`w-full py-2.5 rounded-lg text-sm font-semibold tracking-tight transition-all duration-200 ${
+              selected && !(selected === 'custom' && !custom.trim())
+                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-900/40 hover:shadow-indigo-900/60'
+                : 'bg-[#12122a] text-slate-700 cursor-not-allowed border border-border'
+            }`}
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Starting pipeline…
+              </span>
+            ) : (
+              '🚀 Run Pipeline'
+            )}
+          </button>
+
+          <button
+            onClick={onDemo}
+            className="w-full py-2 rounded-lg text-xs font-medium text-violet-400 border border-violet-700/40 hover:border-violet-500/60 hover:bg-violet-950/30 transition-all duration-200"
+          >
+            ▶ Watch Demo  <span className="text-violet-600">— no API key needed</span>
+          </button>
+        </div>
       ) : (
         <button
-          onClick={handleReset}
+          onClick={onReset}
           className="w-full py-2.5 rounded-lg text-sm font-medium text-slate-300 border border-border hover:border-slate-500 hover:bg-[#12122a] transition-all duration-200"
         >
           ↺ New Run
