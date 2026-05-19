@@ -53,22 +53,56 @@ Software teams waste enormous time on boilerplate, repeated architecture decisio
 # Clone and enter directory
 cd autodev-crew
 
-# Create virtual environment (requires Python 3.12)
+# Create virtual environment (requires Python 3.12+)
 python3.12 -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
 
-# Install dependencies
+# Install Python dependencies (includes FastAPI + Uvicorn)
 pip install -e .
 
-# Configure API key
+# Configure your API key
 cp .env.example .env
-# Edit .env and add your OPENAI_API_KEY
 ```
 
-## Usage
+Edit `.env` and set **one** of the following:
 
 ```bash
-# Run the interactive CLI
+# Option A — OpenAI
+OPENAI_API_KEY=sk-...
+MODEL=gpt-4o
+
+# Option B — Anthropic (Claude)
+ANTHROPIC_API_KEY=sk-ant-...
+MODEL=claude-sonnet-4-6
+```
+
+---
+
+## Running the UI (recommended)
+
+The web UI gives you a live pipeline dashboard — agent status, streaming console, and output file viewer.
+
+**Terminal 1 — start the API backend:**
+```bash
+source venv/bin/activate
+python run_api.py          # runs on http://localhost:8000
+```
+
+**Terminal 2 — start the frontend:**
+```bash
+cd frontend
+npm install                # first time only
+npm run dev                # runs on http://localhost:5173
+```
+
+Open **http://localhost:5173**, pick a demo scenario or enter your own feature request, and hit **Run Pipeline**.
+
+---
+
+## Running the CLI (no UI)
+
+```bash
+source venv/bin/activate
 python -m autodev_crew.main
 
 # Choose from 3 demo scenarios or enter your own feature request
