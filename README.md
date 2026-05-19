@@ -2,6 +2,9 @@
 
 > A CrewAI-powered autonomous development pipeline where 5 specialized AI agents collaborate to turn a feature request into production-ready code.
 
+<img width="1726" height="914" alt="Screenshot 2026-05-20 at 1 09 34 AM" src="https://github.com/user-attachments/assets/aa593ba7-1bfd-40bc-8405-ff772b67afe8" />
+
+
 ## Architecture
 
 ```
